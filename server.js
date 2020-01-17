@@ -1,52 +1,94 @@
-// Require dependencies
-var http = require("http");
-var fs = require("fs");
+// Dependencies
+// =============================================================
+var express = require("express");
+var path = require("path");
 
-// Set our port to 8080
-var PORT = 8080;
+// Sets up the Express App
+// =============================================================
+var app = express();
+var PORT = 3000;
 
-var server = http.createServer(handleRequest);
+// Sets up the Express app to handle data parsing
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-function handleRequest(req, res) {
-
-  // Capture the url the request is made to
-  var path = req.url;
-
-  // When we visit different urls, read and respond with different files
-  switch (path) {
-
-  case "/food":
-    return fs.readFile(__dirname + "/food.html", function(err, data) {
-      if (err) throw err;
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
-    });
-
-  case "/movies":
-    return fs.readFile(__dirname + "/movies.html", function(err, data) {
-      if (err) throw err;
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
-    });
-
-  case "/frameworks":
-    return fs.readFile(__dirname + "/frameworks.html", function(err, data) {
-      if (err) throw err;
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
-    });
-
-    // default to rendering index.html, if none of above cases are hit
-  default:
-    return fs.readFile(__dirname + "/index.html", function(err, data) {
-      if (err) throw err;
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
-    });
+// Roster staff (DATA)
+// =============================================================
+var staffs = [
+  {
+    routeName: "Managers",
+    name: "Joe Walsh",
+    role: "Project Manager",
+    age: 900,
+    forcePoints: 2000
+  },
+  {
+    routeName: "darthmaul",
+    name: "Darth Maul",
+    role: "Sith Lord",
+    age: 200,
+    forcePoints: 1200
+  },
+  {
+    routeName: "obiwankenobi",
+    name: "Obi Wan Kenobi",
+    role: "Jedi Master",
+    age: 55,
+    forcePoints: 1350
   }
-}
+];
 
-// Starts our server.
-server.listen(PORT, function() {
-  console.log("Server is listening on PORT: " + PORT);
+// Routes
+// =============================================================
+
+// Basic route that sends the user first to the AJAX Page
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname, "view.html"));
+});
+
+app.get("/add", function(req, res) {
+  res.sendFile(path.join(__dirname, "add.html"));
+});
+
+// Displays all staffs
+app.get("/api/staffs", function(req, res) {
+  return res.json(staffs);
+});
+
+// Displays a single staff, or returns false
+app.get("/api/staffs/:staff", function(req, res) {
+  var chosen = req.params.staff;
+
+  console.log(chosen);
+
+  for (var i = 0; i < staffs.length; i++) {
+    if (chosen === staffs[i].routeName) {
+      return res.json(staffs[i]);
+    }
+  }
+
+  return res.json(false);
+});
+
+// Create New staffs - takes in JSON input
+app.post("/api/staffs", function(req, res) {
+  // req.body hosts is equal to the JSON post sent from the user
+  // This works because of our body parsing middleware
+  var newstaff = req.body;
+
+  // Using a RegEx Pattern to remove spaces from newstaff
+  // You can read more about RegEx Patterns later https://www.regexbuddy.com/regex.html
+  newstaff.routeName = newstaff.name.replace(/\s+/g, "").toLowerCase();
+
+  console.log(newstaff);
+
+  staffs.push(newstaff);
+
+  res.json(newstaff);
+});
+
+// Starts the server to begin listening
+// =============================================================
+app.listen(PORT, function() {
+  console.log("App listening on PORT " + PORT);
 });
