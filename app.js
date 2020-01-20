@@ -1,41 +1,74 @@
 const inquirer = require("inquirer");
-const jest = require("jest");
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
 
-inquirer
+function initQ() {
+  inquirer
     .prompt([{
-        message: "Pick a manager for your Team:",
-        name: "Manager:name"
+        message: "Enter a Name:",
+        name: "name"
     },
     {
-        message: "Choose at least 1 Engineer:"
-        name: "Engineer:name"
+        message: "Enter an Email:",
+        name: "email"
     },
     {
-        message: "Choose 1 optional Intern:"
-        name: "Intern:name"
+        message: "Enter an Id:",
+        name: "id"
+    },
+    {
+        message: "Enter their Role:",
+        name: "role",
+        type: "list",
+        choices: ["Manager", "Engineer", "Intern"]
     }
     ])
-    .then(function);
-
-
-
-    // getters n methods
-get Name() {
-    return this.name;
+    .then(function(res1) {
+        secondQ(res1);
+     //   console.log(res1);
+    });
 }
+initQ();
 
-get Id() {
-    return this.id;
-}
+function secondQ(res1) {
+  var role = res1.role;
+    if (role === "Manager") {
+        role = "officeNumber"
+    }
+    else if (role === "Engineer") {
+        role = "github"
+    }
+    else {
+        role = "school"
+    }
+    inquirer
+    .prompt([{
+        message: "Enter your " + role,
+        name: "title"
+    }])
+    .then(function(res2) {
+        var data = res1;
+        data ["title"] = res2.title;
+       // thirdQ(data);
+        console.log(data);
+    });
 
-get Email() {
-    return this.email;
 }
+//yes or no  - array of constructed objects from Q's - build in Q2, finally empty array (global) to drop info in
+function thirdQ(res) {
+      inquirer
+      .prompt([{
+          message: "Do you want to add Team Member?",
+          name: "title"
+      }])
+      .then(function(res) {
+          console.log(res);
+      });
+  
+  }
 
-get Role() {
-    return this.title;
-}
 
-get char() {
-    return this.char;
-}
+
+
+
