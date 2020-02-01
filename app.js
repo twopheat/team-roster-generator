@@ -1,7 +1,10 @@
 const inquirer = require("inquirer");
+const builder = require("./index.js");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+
+let myteam = [];
 
 function initQ() {
     inquirer
@@ -33,54 +36,62 @@ initQ();
 
 function secondQ(res1) {
     var role = res1.role;
+    var mypick;
+
     if (role === "Manager") {
-        role = "officenumber"
+        role = "officenumber";
+        mypick = Manager;
     }
     else if (role === "Engineer") {
-        role = "github"
+        role = "github";
+        mypick = Engineer;
     }
     else {
-        role = "school"
+        role = "school";        
+        mypick = Intern;
     }
     inquirer
         .prompt([{
             message: "Enter your " + role,
-            name: "title"
+            name: "info"
         }])
         .then(function (res2) {
             var data = res1;
-            data["title"] = res2.title;
-            thirdQ(data);
-            console.log(data);
+            data["info"] = res2.info;
+            myteam.push(new mypick(data.name, data.id, data.email, data.info))
+            thirdQ();
+            console.log(res2.info);
         });
 
 }
 //yes or no  - array of constructed objects from Q's - build in Q2, finally empty array (global) to drop info in
-function thirdQ(data) {
-
+function thirdQ() {
     inquirer
         .prompt([{
             message: "Do you want to add another team member?",
-            name: "another",
+            name: "add",
             type: "list",
             choices: ["yes", "no"]
         }])
-        .then(function (another) {
-            var res2 = data;
-            if (another === "yes") {
+        .then(function ({add}) {
+            
+            if (add === "yes") {
                 initQ();
+                
               }
-            else if (another === "no") {
-                buildTemp(res2);
+            else if (add === "no") {
+                builder(myteam);
+                
             }
-            console.log(res2);
+
+            
         
 
         
     });
 
 }
-
+//module.exports = res1;
 
 
 
