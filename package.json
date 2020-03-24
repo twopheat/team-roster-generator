@@ -2,7 +2,7 @@
   "name": "roster-rooter",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "dependencies": {
     "inquirer": "^7.0.3"
   },

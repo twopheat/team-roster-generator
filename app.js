@@ -1,8 +1,10 @@
 const inquirer = require("inquirer");
-const builder = require("./index.js");
+//const builder = require("./index.js");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const htmlRenderer = require("./lib/htmlRenderer");
+const fs = require("fs");
 
 let myteam = [];
 
@@ -57,10 +59,10 @@ function secondQ(res1) {
         }])
         .then(function (res2) {
             var data = res1;
-            data["info"] = res2.info;
-            myteam.push(new mypick(data.name, data.id, data.email, data.info))
+            data.info = res2.info;
+            myteam.push(new mypick(data.name, data.id, data.email, res2.info));
             thirdQ();
-            console.log(res2.info);
+            //console.log(res2.info);
         });
 
 }
@@ -77,22 +79,21 @@ function thirdQ() {
             
             if (add === "yes") {
                 initQ();
-                
               }
             else if (add === "no") {
-                builder(myteam);
-                
+                const temp = htmlRenderer(myteam);
+                fs.writeFile("./output/output.html", temp, function(err){
+                    if(err) throw err;
+                });
+                return(0);
             }
-
-            
+                     
         
 
         
     });
 
 }
-//module.exports = res1;
-
 
 
 
